@@ -1,5 +1,7 @@
 from flask import Flask
 import io, json
+import pytesseract
+from PIL import Image, ImageEnhance, ImageFilter
 
 app = Flask(__name__)
 
@@ -27,6 +29,18 @@ class Translate:
             print(e)
         
         return result
+    
+    def image_to_text(self, src_lang, dst_lang, image_path):
+        try:
+            image = Image.open(image_path)
+            image = image.convert('L')
+            image = image.filter(ImageFilter.SHARPEN)
+            enhancer = ImageEnhance.Contrast(image)
+            image = enhancer.enhance(2.0)
+            text = pytesseract.image_to_string(image,  lang=src_lang)
+            return(text)
+        except BaseException as e:
+            print(e)
 
 @app.route("/")
 def handler():
