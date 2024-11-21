@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, render_template
 from openai import OpenAI
 import io, json, os
 import pytesseract
 from PIL import Image, ImageEnhance, ImageFilter
 import speech_recognition as sr
-from requests import post
+from requests import post, get
 import pyttsx3
 
 class Translate:
@@ -104,9 +104,10 @@ class AIChatBot:
 class AIChatBot:
     def __init__(self):
         self.url = "https://api3.haji-api.ir/majid/gpt/4?q={}&license=HPegOmZxczNMUNLG38IZWSH4WHFuaWCBVYdt8Iu1AfIGjBVMo71fZA0idUd"
+        self.role = "You are a language learning assistant and partner to improving language skills. here is the user text:\n\n"
     
     def talk_to_ai(self, text):
-        response = get(self.url.format(text))
+        response = get(self.url.format(self.role + text))
         return response.json()['result']
         
 
@@ -157,8 +158,15 @@ def image_handler():
     os.remove(temp_path)
     return jsonify({"translation": result})
 
+@app.route("/ai-chat", methods=['GET'])
+def ai_chat_handler():
+    # return the index.html file
+    return render_template('./index.html')
+
 @app.route("/ai", methods=['POST'])
 def ai_chatbot():
+    print(request)
+    print(request.form)
     data = request.form.get('message')
     return ai.talk_to_ai(data)
 
@@ -170,4 +178,4 @@ def speech_handler():
     return send_file(result, as_attachment=True)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
