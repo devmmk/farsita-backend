@@ -1,3 +1,5 @@
-ibm-watson
+pyttsx3
+pytesseract
 requests
 flask
+openai

@@ -39,11 +39,19 @@ function sendMessage() {
 
 function getBotResponse(userMessage) {
     // Simple bot response logic, can be extended
-    if (userMessage.toLowerCase().includes('hello')) {
-        return 'Hello! How can I help you?';
-    } else if (userMessage.toLowerCase().includes('bye')) {
-        return 'Goodbye! Have a nice day!';
-    } else {
-        return 'I\'m not sure how to respond to that.';
-    }
+    return fetch('http://127.0.0.1:5000/ai', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: userMessage
+            })
+        })
+        .then(response => response.text())
+        .catch(error => {
+            console.error('Error:', error);
+            return 'Sorry, I encountered an error processing your request.';
+        }).response;
+    
 }
